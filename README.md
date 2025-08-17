@@ -43,7 +43,7 @@ A complete monitoring system for tracking the **health and security posture of m
 
 ## Setup
 
-Change the time for testing, currently it's between 15 to 60 minutes
+Clone the repo and change the time for testing, currently it's between 15 to 60 minutes
 
 ### Backend (FastAPI)
 
@@ -54,6 +54,8 @@ python -m venv .venv
 pip install fastapi uvicorn sqlalchemy pydantic
 uvicorn app:app --reload --port 8000
 ```
+
+will be visible at http://127.0.0.1:8000/machines
 
 ### Frontend (React)
 

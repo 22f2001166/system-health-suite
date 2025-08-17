@@ -1,5 +1,7 @@
 dashboard/node_modules/
 server/__pycache__
 server/venv
+server/.venv
 server/syshealth.db
 agent/venv
+agent/.venv
