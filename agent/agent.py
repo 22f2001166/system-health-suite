@@ -1,4 +1,3 @@
-# agent/agent.py
 import hashlib, json, os, platform, random, subprocess, sys, time, uuid, pathlib
 from datetime import datetime, timezone
 
@@ -106,6 +105,7 @@ def detect_antivirus():
         return {"enabled": enabled, "raw": out[:1000]}
     # macOS/Linux stub
     return {"enabled": False, "raw": "Not implemented"}
+
 
 def detect_sleep_minutes():
     osname = platform.system().lower()

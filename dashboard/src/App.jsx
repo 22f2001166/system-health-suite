@@ -5,7 +5,6 @@ import { getMachines } from "./services/api";
 
 function App() {
   const [machines, setMachines] = useState([]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,7 +23,7 @@ function App() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+      <Paper elevation={3} sx={{ py: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 600 }}>
           System Health Dashboard
         </Typography>
