@@ -1,6 +1,6 @@
 {
   "server_url": "http://localhost:8000",
   "api_key": "DEV_AGENT_KEY",
-  "interval_min_minutes": 0,
-  "interval_max_minutes": 1
+  "interval_min_minutes": 15,
+  "interval_max_minutes": 60
 }

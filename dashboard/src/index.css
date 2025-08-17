@@ -25,12 +25,12 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  justify-content: center;   /* horizontal centering */
-  align-items: flex-start;   /* align content to top */
-  padding-top: 3rem;         /* move content down a bit from top */
+  justify-content: center;   
+  align-items: flex-start;   
+  padding-top: 3rem;         
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f5f5f5; /* clean professional background */
+  background-color: #f5f5f5;
   font-family: 'Roboto', sans-serif;
   color: #333;
 } 

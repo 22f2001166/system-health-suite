@@ -1,9 +1,0 @@
-# docker-compose.yml
-services:
-  api:
-    image: tiangolo/uvicorn-gunicorn-fastapi:python3.11
-    volumes: ["./server:/app"]
-    environment:
-      - API_KEY=${API_KEY:-DEV_AGENT_KEY}
-      - DB_URL=sqlite:////app/syshealth.db
-    ports: ["8000:80"]

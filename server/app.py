@@ -1,4 +1,3 @@
-# server/app.py
 import os, csv, io
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,6 +5,7 @@ from sqlalchemy import create_engine, select, desc
 from sqlalchemy.orm import sessionmaker, Session
 from models import Base, Machine, Report
 from pydantic import BaseModel
+from fastapi.responses import StreamingResponse
 
 DB_URL = os.getenv("DB_URL", "sqlite:///./syshealth.db")
 API_KEY = os.getenv("API_KEY", "DEV_AGENT_KEY")
@@ -76,9 +76,10 @@ def machines(
     os: str | None = None,
     issue: str | None = None,
     q: str | None = None,
+    sort_by: str | None = None,
+    order: str = "asc",
     db: Session = Depends(get_db),
 ):
-    # latest report per machine
     data = []
     for m in db.query(Machine).all():
         latest = (
@@ -110,11 +111,27 @@ def machines(
                 "last_check_in": latest.created_at.isoformat(),
             }
         )
+
+    # Sorting logic
+    if sort_by:
+        reverse = order == "desc"
+        if sort_by == "hostname":
+            data.sort(key=lambda x: x["hostname"] or "", reverse=reverse)
+        elif sort_by == "os":
+            data.sort(key=lambda x: (x["os"]["system"] or ""), reverse=reverse)
+        elif sort_by == "last_check_in":
+            data.sort(key=lambda x: x["last_check_in"], reverse=reverse)
+
     return {"items": data, "count": len(data)}
 
 
 @app.get("/machines.csv")
-def machines_csv(db: Session = Depends(get_db)):
+def machines_csv(
+    os: str | None = None,
+    issue: str | None = None,
+    q: str | None = None,
+    db: Session = Depends(get_db),
+):
     out = io.StringIO()
     w = csv.writer(out)
     w.writerow(
@@ -129,6 +146,7 @@ def machines_csv(db: Session = Depends(get_db)):
             "last_check_in",
         ]
     )
+
     for m in db.query(Machine).all():
         latest = (
             db.query(Report)
@@ -137,6 +155,12 @@ def machines_csv(db: Session = Depends(get_db)):
             .first()
         )
         if not latest:
+            continue
+        if os and (m.os_system or "").lower() != os.lower():
+            continue
+        if issue and not (latest.issues or {}).get(issue, False):
+            continue
+        if q and q.lower() not in (m.hostname or "").lower():
             continue
         i = latest.issues or {}
         w.writerow(
@@ -151,4 +175,9 @@ def machines_csv(db: Session = Depends(get_db)):
                 latest.created_at,
             ]
         )
-    return io.BytesIO(out.getvalue().encode())
+
+    out.seek(0)
+    headers = {"Content-Disposition": "attachment; filename=machines.csv"}
+    return StreamingResponse(
+        iter([out.getvalue()]), media_type="text/csv", headers=headers
+    )

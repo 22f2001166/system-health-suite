@@ -1,5 +1,6 @@
 import hashlib, json, os, platform, random, subprocess, sys, time, uuid, pathlib
 from datetime import datetime, timezone
+import shutil, requests
 
 CONFIG_PATH = os.environ.get("SYSHEALTH_CONFIG", "config.json")
 STATE_DIR = os.path.join(pathlib.Path.home(), ".system-health-agent")
@@ -90,10 +91,6 @@ def detect_os_updates():
             pending = None
         return {"pending_updates": pending, "raw": out}
     return {"pending_updates": None, "raw": "unknown package manager"}
-
-
-# agent/agent.py (rest)
-import shutil, requests
 
 
 def detect_antivirus():
@@ -211,13 +208,10 @@ def main():
                 post_update(cfg, snap)
                 save_last_hash(h)
             except Exception as e:
-                # swallow errors to keep daemon light
                 sys.stderr.write(f"[agent] post failed: {e}\n")
-        # jittered sleep
-        # mins = random.randint(
-        #     cfg.get("interval_min_minutes", 15), cfg.get("interval_max_minutes", 60)
-        # )
-        mins = 0.1  # 6 seconds
+        mins = random.randint(
+            cfg.get("interval_min_minutes", 15), cfg.get("interval_max_minutes", 60)
+        )
 
         time.sleep(mins * 60)
 

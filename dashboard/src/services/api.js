@@ -1,13 +1,15 @@
-import axios from "axios";
-
-const API_BASE = "http://localhost:8000"; // backend server
-
-export async function getMachines() {
-  const res = await fetch("http://127.0.0.1:8000/machines");
-  if (!res.ok) {
-    throw new Error("Failed to fetch machines");
-  }
+export async function getMachines(filters = {}) {
+  const params = new URLSearchParams(filters).toString();
+  const res = await fetch(`http://127.0.0.1:8000/machines?${params}`);
+  if (!res.ok) throw new Error("Failed to fetch machines");
   const data = await res.json();
-  return data.items || [];   // 👈 return only the array
+  return data.items || [];
 }
 
+export async function exportMachinesCSV(filters = {}) {
+  const params = new URLSearchParams(filters).toString();
+  const res = await fetch(`http://127.0.0.1:8000/machines.csv?${params}`);
+  if (!res.ok) throw new Error("Failed to export CSV");
+  const blob = await res.blob();
+  return blob;
+}
