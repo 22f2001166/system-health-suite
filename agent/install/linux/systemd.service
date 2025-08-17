@@ -1,0 +1,14 @@
+# agent/install/linux/systemd.service
+[Unit]
+Description=System Health Agent
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/syshealth-agent/agent.py
+WorkingDirectory=/opt/syshealth-agent
+Restart=always
+Environment=SYSHEALTH_CONFIG=/opt/syshealth-agent/config.json
+
+[Install]
+WantedBy=multi-user.target
